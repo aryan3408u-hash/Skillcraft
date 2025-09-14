@@ -1,0 +1,113 @@
+import java.awt.*;
+import java.util.Random;
+import javax.swing.*;
+
+public class NumberGuessingGUI {
+    private int numberToGuess;
+    private int attempts;
+    private int maxRange = 50; 
+    private Random rand = new Random();
+
+   
+    private JLabel instruction;
+    private JTextField inputField;
+    private JLabel resultLabel;
+
+    public NumberGuessingGUI() {
+      
+        JFrame frame = new JFrame("🎮 Number Guessing Game");
+        frame.setSize(450, 400);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLayout(null);
+        frame.getContentPane().setBackground(Color.WHITE); 
+
+     
+        JLabel levelLabel = new JLabel("Select Difficulty:");
+        levelLabel.setBounds(50, 20, 120, 30);
+
+        String[] levels = {"Easy (1–10)", "Medium (1–50)", "Hard (1–100)"};
+        JComboBox<String> levelBox = new JComboBox<>(levels);
+        levelBox.setBounds(170, 20, 200, 30);
+        levelBox.setSelectedIndex(1); 
+
+    
+        instruction = new JLabel("Guess a number between 1 and " + maxRange + ":");
+        instruction.setBounds(50, 70, 350, 30);
+
+    
+        inputField = new JTextField();
+        inputField.setBounds(50, 110, 100, 30);
+
+      
+        JButton guessBtn = new JButton("Guess");
+        guessBtn.setBounds(170, 110, 100, 30);
+
+       
+        resultLabel = new JLabel("Start guessing...");
+        resultLabel.setBounds(50, 160, 350, 30);
+
+        
+        JButton restartBtn = new JButton("Restart Game");
+        restartBtn.setBounds(50, 210, 150, 30);
+
+        
+        frame.add(levelLabel);
+        frame.add(levelBox);
+        frame.add(instruction);
+        frame.add(inputField);
+        frame.add(guessBtn);
+        frame.add(resultLabel);
+        frame.add(restartBtn);
+
+   
+        levelBox.addActionListener(e -> {
+            String choice = (String) levelBox.getSelectedItem();
+            if (choice.startsWith("Easy")) maxRange = 10;
+            else if (choice.startsWith("Medium")) maxRange = 50;
+            else if (choice.startsWith("Hard")) maxRange = 100;
+
+            startNewGame();
+            instruction.setText("Guess a number between 1 and " + maxRange + ":");
+            resultLabel.setText("New level selected. Start guessing!");
+        });
+
+        
+        guessBtn.addActionListener(e -> {
+            try {
+                int guess = Integer.parseInt(inputField.getText());
+                attempts++;
+
+                if (guess < numberToGuess) {
+                    resultLabel.setText("Too low! 🔽 Try again.");
+                } else if (guess > numberToGuess) {
+                    resultLabel.setText("Too high! 🔼 Try again.");
+                } else {
+                    resultLabel.setText("🎉 Correct! Attempts: " + attempts);
+                }
+            } catch (NumberFormatException ex) {
+                resultLabel.setText("❌ Please enter a valid number!");
+            }
+        });
+
+        
+        restartBtn.addActionListener(e -> {
+            startNewGame();
+            inputField.setText("");
+            resultLabel.setText("Game restarted. Guess again!");
+        });
+
+  
+        startNewGame();
+
+        frame.setVisible(true);
+    }
+
+    private void startNewGame() {
+        numberToGuess = rand.nextInt(maxRange) + 1;
+        attempts = 0;
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(NumberGuessingGUI::new);
+    }
+}
